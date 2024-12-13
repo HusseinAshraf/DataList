@@ -35,7 +35,7 @@ function SideBar({ types, onFilterChange, selectedFilter }) {
         <button
           onClick={toggleSidebar}
           type="button"
-          className="inline-flex items-center p-2 mt-32 ml-7 text-sm text-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200"
+          className="inline-flex items-center p-2 mt-32 ml-7 text-sm text-gray-800 bg-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 hover:bg-gray-300"
           alt='toggle button'
         >
           <span className="sr-only">Open sidebar</span>
@@ -79,9 +79,9 @@ function SideBar({ types, onFilterChange, selectedFilter }) {
               <button
                 onClick={() => onFilterChange(null)}
                 className={`flex items-center w-full px-4 py-2 rounded-lg transition-all ${selectedFilter === null
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
-                  } hover:bg-blue-600 focus:ring-2 focus:ring-blue-400`}
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-300 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
+                  } hover:bg-blue-700 focus:ring-2 focus:ring-blue-500`}
                 alt='all'
               >
                 <FaGlobe />
@@ -95,9 +95,9 @@ function SideBar({ types, onFilterChange, selectedFilter }) {
                 <button
                   onClick={() => onFilterChange(type)}
                   className={`flex items-center w-full px-4 py-2 rounded-lg transition-all ${selectedFilter === type
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
-                    } hover:bg-blue-600 focus:ring-2 focus:ring-blue-400`}
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-300 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
+                    } hover:bg-blue-700 focus:ring-2 focus:ring-blue-500`}
                   alt={t(type)}
                 >
                   {icons[type] || <FaGlobe />} {/* Ensure the icon exists */}
