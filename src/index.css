@@ -1,0 +1,9 @@
+/* Import Flowbite's CSS */
+@import "flowbite";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "MyFont", sans-serif;
+}
