@@ -1,0 +1,15 @@
+# Allow all robots to access everything
+User-agent: *
+Disallow: /private/
+Disallow: /admin/
+
+# Allow specific robots to access all content
+User-agent: Googlebot
+Disallow:
+
+User-agent: Bingbot
+Disallow: /private/
+
+# Allow all robots to access specific paths
+Allow: /public/
+Allow: /images/

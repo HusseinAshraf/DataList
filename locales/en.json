@@ -1,0 +1,27 @@
+{
+  "dataList": "Data List",
+  "searchPlaceholder": "Search by name",
+  "type": "Type",
+  "country": "Country",
+  "currency": "Currency",
+  "notAvailable": "N/A",
+  "noData": "No data available for the selected filter",
+  "english": "English",
+  "german": "Deutsch",
+  "filterByType":"Filter By Type",
+  "all":"ALL",
+  "back": "Back",
+  "symbol": "Symbol",
+  "description": "Description",  
+  "viewCandle": "View Candle",
+  "detailsNotAvailable": "Details not available. Please try again later.",
+  "candleDataFor": "Candle Data for",
+  "date": "Date",
+  "open": "Open",
+  "high": "High",
+  "low": "Low",
+  "close": "Close",
+  "volume": "Volume",
+  "noCandleData": "No candle data available for"
+
+}
