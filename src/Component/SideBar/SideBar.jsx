@@ -36,7 +36,7 @@ function SideBar({ types, onFilterChange, selectedFilter }) {
           onClick={toggleSidebar}
           type="button"
           className="inline-flex items-center p-2 mt-32 ml-7 text-sm text-gray-800 bg-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 hover:bg-gray-300"
-          alt='toggle button'
+          alt="toggle button"  // إضافة alt هنا
         >
           <span className="sr-only">Open sidebar</span>
           <svg
@@ -82,7 +82,7 @@ function SideBar({ types, onFilterChange, selectedFilter }) {
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-300 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
                   } hover:bg-blue-700 focus:ring-2 focus:ring-blue-500`}
-                alt='all'
+                alt="all"  // إضافة alt هنا
               >
                 <FaGlobe />
                 <span className="ml-2">{t('all')}</span>
@@ -91,16 +91,16 @@ function SideBar({ types, onFilterChange, selectedFilter }) {
 
             {/* Filter by Type */}
             {types.map((type) => (
-              <li key={type}> {/* Use the type as the "key" instead of index */}
+              <li key={type}> {/* استخدم النوع كـ "key" بدلاً من الفهرس */}
                 <button
                   onClick={() => onFilterChange(type)}
                   className={`flex items-center w-full px-4 py-2 rounded-lg transition-all ${selectedFilter === type
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-300 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
                     } hover:bg-blue-700 focus:ring-2 focus:ring-blue-500`}
-                  alt={t(type)}
+                  alt={t(type)}  // إضافة alt هنا
                 >
-                  {icons[type] || <FaGlobe />} {/* Ensure the icon exists */}
+                  {icons[type] || <FaGlobe />} {/* التأكد من وجود الأيقونة */}
                   <span className="ml-2">{t(type)}</span>
                 </button>
               </li>
