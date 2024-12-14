@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import debounce from 'lodash.debounce'; // Add lodash for debouncing
 
+// Add Suspense fallback for lazy-loaded components
 const MemoizedSideBar = memo(React.lazy(() => import('../SideBar/SideBar.jsx')));
 const MemoizedLanguageSwitcher = memo(React.lazy(() => import('../LanguageSwitcher/LanguageSwitcher.jsx')));
 
@@ -82,6 +83,12 @@ export default function DataList() {
       <Helmet>
         <title>{t('dataList')}</title>
         <meta name="description" content={metaDescription} />
+        {/* Preload font for faster LCP */}
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+          as="style"
+        />
       </Helmet>
 
       <div className="md:block w-64">
