@@ -7,14 +7,17 @@ export default defineConfig({
   plugins: [
     react(),
     compression({
-      // تفعيل ضغط Gzip أو Brotli
-      algorithm: "gzip", // يمكنك أيضًا استخدام 'brotli' بدلاً من 'gzip'
-      threshold: 10240, // ضغط الملفات التي يتجاوز حجمها 10KB
-      deleteOriginalAssets: false, // لا تحذف الملفات الأصلية بعد الضغط
+      algorithm: "gzip", // أو يمكنك استخدام 'brotli' بدلاً من 'gzip'
+      threshold: 10240, // ضغط الملفات التي يزيد حجمها عن 10KB
+      deleteOriginalAssets: false, // احتفظ بالملفات الأصلية
     }),
   ],
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./src/setupTests.js", // إعدادات إضافية للاختبار (اختياري)
+  },
   build: {
-    // يمكن تمكين تصغير الكود هنا إذا لم يكن مفعلاً بشكل افتراضي
-    minify: "esbuild", // تأكد من تصغير الكود في بيئة الإنتاج
+    minify: "esbuild", // تصغير الكود لتحسين الأداء
   },
 });
