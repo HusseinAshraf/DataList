@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, memo, Suspense, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -51,6 +52,7 @@ export default function DataList() {
 
     fetchData();
   }, []);
+
 
   const filteredData = useMemo(
     () =>
