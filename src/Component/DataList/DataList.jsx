@@ -1,14 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState, memo, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, memo, Suspense, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
-import debounce from 'lodash.debounce';
+import debounce from 'lodash.debounce'; // Add lodash for debouncing
 
-// Preloading components to avoid lazy loading delay
-import SideBar from '../SideBar/SideBar.jsx';
-import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher.jsx';
+const MemoizedSideBar = memo(React.lazy(() => import('../SideBar/SideBar.jsx')));
+const MemoizedLanguageSwitcher = memo(React.lazy(() => import('../LanguageSwitcher/LanguageSwitcher.jsx')));
 
 export default function DataList() {
   const { t } = useTranslation();
@@ -26,7 +25,6 @@ export default function DataList() {
     []
   );
 
-  // Fetch data with caching
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -55,46 +53,47 @@ export default function DataList() {
     fetchData();
   }, []);
 
-  // Optimized filtering logic
-  const filteredData = useMemo(() => {
-    if (!searchTerm && !selectedFilter) return exchangeData;
-    return exchangeData.filter((item) => {
-      const matchesFilter = selectedFilter
-        ? item.type?.toLowerCase() === selectedFilter.toLowerCase()
-        : true;
-      const matchesSearch = searchTerm
-        ? item.name?.toLowerCase().includes(searchTerm.toLowerCase())
-        : true;
-      return matchesFilter && matchesSearch;
-    });
-  }, [exchangeData, searchTerm, selectedFilter]);
 
-  // Debounced search handling
+  const filteredData = useMemo(
+    () =>
+      exchangeData.filter((item) => {
+        const matchesFilter = selectedFilter
+          ? item.type?.toLowerCase() === selectedFilter.toLowerCase()
+          : true;
+        const matchesSearch = searchTerm
+          ? item.name?.toLowerCase().includes(searchTerm.toLowerCase())
+          : true;
+        return matchesFilter && matchesSearch;
+      }),
+    [exchangeData, searchTerm, selectedFilter]
+  );
+
   const handleSearch = useCallback(
     debounce((value) => setSearchTerm(value), 300),
     []
   );
 
   const handleFilterChange = (filter) => setSelectedFilter(filter);
+
   const handleItemClick = (symbol) => navigate(`/details/${symbol}`);
 
   const metaDescription = `Find the best exchange data based on your search for "${searchTerm}"${selectedFilter ? ` and filter by ${selectedFilter}` : ''}.`;
 
   return (
     <>
-      {/* Preload fonts to improve LCP */}
       <Helmet>
-        <link rel="preload" href="/path-to-font.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <title>{t('dataList')}</title>
         <meta name="description" content={metaDescription} />
       </Helmet>
 
       <div className="md:block w-64">
-        <SideBar
-          types={types}
-          onFilterChange={handleFilterChange}
-          selectedFilter={selectedFilter}
-        />
+        <Suspense fallback={<div>Loading sidebar...</div>}>
+          <MemoizedSideBar
+            types={types}
+            onFilterChange={handleFilterChange}
+            selectedFilter={selectedFilter}
+          />
+        </Suspense>
       </div>
 
       <div className="sm:ml-64 overflow-auto p-6 dark:bg-gray-900">
@@ -110,7 +109,10 @@ export default function DataList() {
               onChange={(e) => handleSearch(e.target.value)}
               className="w-full sm:w-1/2 lg:w-1/3 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
-            <LanguageSwitcher />
+
+            <Suspense fallback={<div>Loading language switcher...</div>}>
+              <MemoizedLanguageSwitcher />
+            </Suspense>
           </div>
         </header>
 
