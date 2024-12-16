@@ -32,5 +32,14 @@
   "previous": "Zurück",
   "next": "Weiter",
   "page": "Seite",
-  "of": "von"
+  "of": "von",
+  "detailsNotFound": "Details nicht gefunden",
+  "loadingDetails": "Laden der Details...",
+  "errorFetchingData": "Fehler beim Abrufen der Daten",
+  "networkError": "Netzwerkfehler",
+  "unexpectedError": "Unerwarteter Fehler",
+  "industry": "Branche",
+  "website": "Webseite",
+  "marketCap": "Marktkapitalisierung",
+  "sector": "Sektor"
 }

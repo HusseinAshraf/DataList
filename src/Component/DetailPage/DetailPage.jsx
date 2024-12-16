@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useState, useMemo, useCallback, Suspense, lazy } from 'react';
+import React, { useEffect, useState, useCallback, Suspense, lazy } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
 import { BsGraphUp } from 'react-icons/bs';
@@ -18,11 +17,12 @@ export default function DetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetching details with caching logic
   const fetchDetail = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
 
+    try {
       const cachedData = localStorage.getItem(`detail-${symbol}`);
       const cachedTime = localStorage.getItem(`detailTimestamp-${symbol}`);
       const currentTime = Date.now();
@@ -31,7 +31,7 @@ export default function DetailPage() {
         setDetail(JSON.parse(cachedData));
       } else {
         const { data } = await axios.get('/metadata.json');
-        const detailData = data.hits.hits.find((item) => item._source.symbol === symbol)?.['_source'];
+        const detailData = data.hits.hits.find(item => item._source.symbol === symbol)?._source;
 
         if (detailData) {
           localStorage.setItem(`detail-${symbol}`, JSON.stringify(detailData));
@@ -43,13 +43,7 @@ export default function DetailPage() {
       }
     } catch (err) {
       console.error('Error fetching metadata:', err);
-      setError(
-        err.response
-          ? `${t('errorFetchingData')}: ${err.response.statusText}`
-          : err.request
-            ? t('networkError')
-            : t('unexpectedError')
-      );
+      setError(err?.response ? `${t('errorFetchingData')}: ${err.response.statusText}` : t('networkError'));
     } finally {
       setLoading(false);
     }
@@ -59,42 +53,51 @@ export default function DetailPage() {
     fetchDetail();
   }, [fetchDetail]);
 
-  const detailContent = useMemo(() => {
-    if (!detail) return null;
+  // Fallback for missing fields
+  const getFieldValue = (field) => field || t('notAvailable');
 
-    return (
-      <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg space-y-6">
-        <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">{detail.name}</h2>
-        <div className="space-y-3">
-          <p className="text-gray-700 dark:text-gray-300">
-            <strong className="font-semibold">{t('symbol')}:</strong> {detail.symbol}
-          </p>
-          <p className="text-gray-700 dark:text-gray-300">
-            <strong className="font-semibold">{t('type')}:</strong> {detail.type}
-          </p>
-          <p className="text-gray-700 dark:text-gray-300">
-            <strong className="font-semibold">{t('country')}:</strong> {detail.countryName}
-          </p>
-          <p className="text-gray-700 dark:text-gray-300">
-            <strong className="font-semibold">{t('currency')}:</strong> {detail.currency}
-          </p>
-          <p className="text-gray-700 dark:text-gray-300">
-            <strong className="font-semibold">{t('description')}:</strong>{' '}
-            {detail.description || t('notAvailable')}
-          </p>
-        </div>
-
-        <button
-          onClick={() => navigate(`/candles/${symbol}`)}
-          className="mt-6 flex items-center bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 shadow-lg transition duration-200"
-          alt='view candle'
-        >
-          <BsGraphUp className="mr-2" />
-          {t('viewCandle')}
-        </button>
+  const detailContent = detail && (
+    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg space-y-6">
+      <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">{getFieldValue(detail.name)}</h2>
+      <div className="space-y-3">
+        <p className="text-gray-700 dark:text-gray-300">
+          <strong className="font-semibold">{t('symbol')}:</strong> {getFieldValue(detail.symbol)}
+        </p>
+        <p className="text-gray-700 dark:text-gray-300">
+          <strong className="font-semibold">{t('type')}:</strong> {getFieldValue(detail.type)}
+        </p>
+        <p className="text-gray-700 dark:text-gray-300">
+          <strong className="font-semibold">{t('country')}:</strong> {getFieldValue(detail.countryName)}
+        </p>
+        <p className="text-gray-700 dark:text-gray-300">
+          <strong className="font-semibold">{t('currency')}:</strong> {getFieldValue(detail.currency)}
+        </p>
+        <p className="text-gray-700 dark:text-gray-300">
+          <strong className="font-semibold">{t('description')}:</strong> {getFieldValue(detail.description)}
+        </p>
+        <p className="text-gray-700 dark:text-gray-300">
+          <strong className="font-semibold">{t('industry')}:</strong> {getFieldValue(detail.industry)}
+        </p>
+        <p className="text-gray-700 dark:text-gray-300">
+          <strong className="font-semibold">{t('website')}:</strong> {getFieldValue(detail.website)}
+        </p>
+        <p className="text-gray-700 dark:text-gray-300">
+          <strong className="font-semibold">{t('marketCap')}:</strong> {getFieldValue(detail.marketCap)}
+        </p>
+        <p className="text-gray-700 dark:text-gray-300">
+          <strong className="font-semibold">{t('sector')}:</strong> {getFieldValue(detail.sector)}
+        </p>
       </div>
-    );
-  }, [detail, navigate, symbol, t]);
+
+      <button
+        onClick={() => navigate(`/candles/${symbol}`)}
+        className="mt-6 flex items-center bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 shadow-lg transition duration-200"
+      >
+        <BsGraphUp className="mr-2" />
+        {t('viewCandle')}
+      </button>
+    </div>
+  );
 
   const metaDescription = detail
     ? `${detail.name} (${detail.symbol}) - A detailed view of the ${detail.type} from ${detail.countryName}, available in ${detail.currency}.`
@@ -118,7 +121,6 @@ export default function DetailPage() {
       <button
         onClick={() => navigate(-1)}
         className="mb-6 flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200"
-        alt='back'
       >
         <AiOutlineArrowLeft className="mr-2" />
         {t('back')}
@@ -128,13 +130,7 @@ export default function DetailPage() {
         <div className="text-center text-red-500">
           <p>{error}</p>
         </div>
-      ) : detail ? (
-        detailContent
-      ) : (
-        <div className="text-center text-gray-500">
-          <p>{t('detailsNotAvailable')}</p>
-        </div>
-      )}
+      ) : detailContent}
     </div>
   );
 }

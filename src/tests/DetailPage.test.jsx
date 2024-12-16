@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { MemoryRouter, useNavigate } from 'react-router-dom'; // استيراد MemoryRouter و useNavigate
 import DetailPage from '../Component/DetailPage/DetailPage'; // تأكد من صحة المسار هنا
 import axios from 'axios';
