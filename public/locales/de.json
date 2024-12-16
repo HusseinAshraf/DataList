@@ -28,5 +28,9 @@
   "low": "Niedrig",
   "close": "Schließen",
   "volume": "Volumen",
-  "noCandleData": "Keine Kerzendaten verfügbar für"
+  "noCandleData": "Keine Kerzendaten verfügbar für",
+  "previous": "Zurück",
+  "next": "Weiter",
+  "page": "Seite",
+  "of": "von"
 }

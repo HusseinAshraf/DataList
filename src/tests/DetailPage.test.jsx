@@ -72,8 +72,8 @@ describe('DetailPage Component', () => {
       </MemoryRouter>
     );
 
-    // const navigateButton = screen.getByText(/navigate to candles/i); // تأكد من أن النص هو نص الزر المناسب
+    // const navigateButton = screen.getByText(/navigate to candles/i);
     // navigateButton.click();
-    // expect(navigateMock).toHaveBeenCalledWith('/candles'); // تأكد من أن المسار الصحيح يتم التوجيه إليه
+    // expect(navigateMock).toHaveBeenCalledWith('../Component/CandlePage/CandlePage.jsx'); 
   });
 });

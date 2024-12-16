@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, Suspense, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AiOutlineArrowLeft } from 'react-icons/ai';
+import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import Loading from '../Loading/Loading';
@@ -15,27 +15,24 @@ export default function CandlePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Memoize filtered candles to avoid recalculating on every render
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6; // Number of items per page
+
   const filteredCandles = useMemo(() => {
     return candles.filter(
       (candle) => candle.symbol.toLowerCase() === symbol.toLowerCase()
     );
   }, [candles, symbol]);
 
-  // Memoize function to avoid re-creating it on every render
-  const storeDataWithQuotaCheck = useCallback((key, data) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(data));
-    } catch (e) {
-      if (e.name === 'QuotaExceededError') {
-        console.warn('Quota exceeded, clearing old data...');
-        localStorage.clear();
-        localStorage.setItem(key, JSON.stringify(data));
-      } else {
-        throw e;
-      }
-    }
-  }, []);
+  const paginatedCandles = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredCandles.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredCandles, currentPage, itemsPerPage]);
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredCandles.length / itemsPerPage);
+  }, [filteredCandles.length, itemsPerPage]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -51,36 +48,31 @@ export default function CandlePage() {
         if (response.data?.hits?.hits) {
           const data = response.data.hits.hits.map((item) => item._source) || [];
           setCandles(data);
-          storeDataWithQuotaCheck(`candlesData-${symbol}`, data); // Cache the fetched data
         } else {
           setError(t('noCandleData')); // Handle case where no data is found
         }
       }
     } catch (error) {
       console.error('Error fetching candle data:', error);
-      if (error.response) {
-        setError(`${t('errorFetchingData')}: ${error.response.statusText}`);
-      } else if (error.request) {
-        setError(t('networkError'));
-      } else {
-        setError(t('unexpectedError'));
-      }
+      setError(t('unexpectedError'));
     } finally {
       setLoading(false);
     }
-  }, [symbol, t, storeDataWithQuotaCheck]);
+  }, [symbol, t]);
 
-  // Fetch data on initial mount and when symbol changes
   useEffect(() => {
     fetchData();
   }, [symbol, fetchData]);
 
-  // If loading, show loading component
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    window.scrollTo(0, 0); // Scroll to top when changing page
+  };
+
   if (loading) {
     return <Loading />;
   }
 
-  // If there was an error, show error message
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -89,21 +81,16 @@ export default function CandlePage() {
     );
   }
 
-  const metaDescription = filteredCandles.length > 0
-    ? `${t('candleDataFor')} ${symbol}: ${t('viewCandleDataDesc')}`
-    : t('loadingDetails');
-
   return (
     <div className="container mx-auto px-4 py-8">
       <Helmet>
         <title>{t('candleDataFor')} {symbol}</title>
-        <meta name="description" content={metaDescription} />
       </Helmet>
 
       <button
         onClick={() => {
           navigate(-1);
-          window.scrollTo(0, 0); // Scroll to top on back
+          window.scrollTo(0, 0);
         }}
         className="mb-6 flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200"
         alt="back"
@@ -116,10 +103,10 @@ export default function CandlePage() {
         {t('candleDataFor')} {symbol}
       </h2>
 
-      {filteredCandles.length > 0 ? (
-        <Suspense fallback={<Loading />}>
+      {paginatedCandles.length > 0 ? (
+        <div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCandles.map((candle, index) => (
+            {paginatedCandles.map((candle, index) => (
               <div
                 key={index}
                 className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200"
@@ -129,26 +116,44 @@ export default function CandlePage() {
                   {new Date(candle.dateTime).toLocaleString()}
                 </p>
                 <div className="mt-2 space-y-1 text-gray-600 dark:text-gray-400">
-                  <p>
-                    <strong>{t('open')}:</strong> {candle.startPrice.toLocaleString()}
-                  </p>
-                  <p>
-                    <strong>{t('high')}:</strong> {candle.highestPrice.toLocaleString()}
-                  </p>
-                  <p>
-                    <strong>{t('low')}:</strong> {candle.lowestPrice.toLocaleString()}
-                  </p>
-                  <p>
-                    <strong>{t('close')}:</strong> {candle.endPrice.toLocaleString()}
-                  </p>
-                  <p>
-                    <strong>{t('volume')}:</strong> {candle.volume.toLocaleString()}
-                  </p>
+                  <p><strong>{t('open')}:</strong> {candle.startPrice.toLocaleString()}</p>
+                  <p><strong>{t('high')}:</strong> {candle.highestPrice.toLocaleString()}</p>
+                  <p><strong>{t('low')}:</strong> {candle.lowestPrice.toLocaleString()}</p>
+                  <p><strong>{t('close')}:</strong> {candle.endPrice.toLocaleString()}</p>
+                  <p><strong>{t('volume')}:</strong> {candle.volume.toLocaleString()}</p>
                 </div>
               </div>
             ))}
           </div>
-        </Suspense>
+
+          {/* Pagination Controls */}
+          
+
+          <div className="mt-6 flex justify-center items-center space-x-2">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed transition duration-200 shadow-lg space-x-2"
+            >
+              <AiOutlineArrowLeft className="text-lg" />
+              <span>{t('previous')}</span>
+            </button>
+            <span className="text-gray-800 dark:text-gray-100 font-semibold">
+              {t('page')} {currentPage} {t('of')} {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed transition duration-200 shadow-lg space-x-2"
+            >
+              <span>{t('next')}</span>
+              <AiOutlineArrowRight className="text-lg" />
+            </button>
+          </div>
+
+
+
+        </div>
       ) : (
         <p className="text-gray-500 text-center">{t('noCandleData')}</p>
       )}
