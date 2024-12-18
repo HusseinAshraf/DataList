@@ -18,6 +18,58 @@ Check out the live version of the project here:
 - **Testing:** Unit and integration testing with [Vitest](https://vitest.dev/), ensuring reliable app performance.
 - **SEO-Friendly:** [React Helmet](https://www.npmjs.com/package/react-helmet) for managing head tags.
 
+ 
+## Core Libraries
+axios: Promise-based HTTP client for making API requests.
+https://axios-http.com/
+
+compression: Middleware for fast HTTP response compression.
+https://www.npmjs.com/package/compression
+
+flowbite: UI components and features for building modern web interfaces.
+https://flowbite.com/
+
+i18next: Framework for internationalization and localization in JavaScript applications.
+https://www.i18next.com/
+
+i18next-http-backend: Backend plugin for loading translations over HTTP in i18next.
+https://www.npmjs.com/package/i18next-http-backend
+
+lodash.debounce: Utility function to delay the processing of a function call.
+https://www.npmjs.com/package/lodash.debounce
+
+react: JavaScript library for building user interfaces.
+https://reactjs.org/
+
+react-dom: Provides DOM-specific methods for React.
+https://reactjs.org/
+
+react-helmet: Manage changes to the document head.
+https://www.npmjs.com/package/react-helmet
+
+react-helmet-async: Async version of react-helmet for better handling in SSR (server-side rendering).
+https://www.npmjs.com/package/react-helmet-async
+
+react-i18next: React bindings for the i18next internationalization framework.
+https://react.i18next.com/
+
+react-icons: A library of popular icons as React components.
+https://react-icons.github.io/react-icons/
+
+react-router-dom: Declarative routing for React.
+https://reactrouter.com/
+
+react-window: A library for rendering large lists and tabular data.
+https://react-window.vercel.app/
+
+react-world-flags: React components to display world flags.
+https://www.npmjs.com/package/react-world-flags
+
+use-debounce: A custom React hook to debounce values.
+https://www.npmjs.com/package/use-debounce
+
+ 
+
 ## Installation
 
 To set up the project locally, follow these steps:
