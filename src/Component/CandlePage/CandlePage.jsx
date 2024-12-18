@@ -17,25 +17,21 @@ export default function CandlePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  // Filter candles by symbol
   const filteredCandles = useMemo(
     () => candles.filter((candle) => candle.symbol.toLowerCase() === symbol.toLowerCase()),
     [candles, symbol]
   );
 
-  // Paginated candles
   const paginatedCandles = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredCandles.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredCandles, currentPage, itemsPerPage]);
 
-  // Total pages calculation
   const totalPages = useMemo(() => Math.ceil(filteredCandles.length / itemsPerPage), [
     filteredCandles.length,
     itemsPerPage,
   ]);
 
-  // Fetch data
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
@@ -76,7 +72,7 @@ export default function CandlePage() {
   if (error) {
     return (
       <div className="text-center py-8">
-        <p className="text-red-500">{error}</p>
+        <p className="text-red-600 text-lg font-medium">{error}</p>
       </div>
     );
   }
@@ -98,21 +94,36 @@ export default function CandlePage() {
         {t('back')}
       </button>
 
-      <h2 className="text-3xl font-bold mb-6">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
         {t('candleDataFor')} {symbol}
       </h2>
 
       {paginatedCandles.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedCandles.map((candle, index) => (
-              <div key={index} className="p-6 bg-white rounded-lg shadow hover:shadow-md transition-shadow">
-                <p><strong>{t('date')}:</strong> {new Date(candle.dateTime).toLocaleString()}</p>
-                <p><strong>{t('open')}:</strong> {candle.startPrice.toLocaleString()}</p>
-                <p><strong>{t('high')}:</strong> {candle.highestPrice.toLocaleString()}</p>
-                <p><strong>{t('low')}:</strong> {candle.lowestPrice.toLocaleString()}</p>
-                <p><strong>{t('close')}:</strong> {candle.endPrice.toLocaleString()}</p>
-                <p><strong>{t('volume')}:</strong> {candle.volume.toLocaleString()}</p>
+              <div
+                key={index}
+                className="p-6 bg-white rounded-lg shadow-lg hover:shadow-xl transition-transform"
+              >
+                <p className="text-gray-700">
+                  <strong>{t('date')}:</strong> {new Date(candle.dateTime).toLocaleString()}
+                </p>
+                <p className="text-gray-700">
+                  <strong>{t('open')}:</strong> {candle.startPrice.toLocaleString()}
+                </p>
+                <p className="text-gray-700">
+                  <strong>{t('high')}:</strong> {candle.highestPrice.toLocaleString()}
+                </p>
+                <p className="text-gray-700">
+                  <strong>{t('low')}:</strong> {candle.lowestPrice.toLocaleString()}
+                </p>
+                <p className="text-gray-700">
+                  <strong>{t('close')}:</strong> {candle.endPrice.toLocaleString()}
+                </p>
+                <p className="text-gray-700">
+                  <strong>{t('volume')}:</strong> {candle.volume.toLocaleString()}
+                </p>
               </div>
             ))}
           </div>
@@ -121,26 +132,25 @@ export default function CandlePage() {
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition space-x-2"
+              className="flex items-center px-4 py-2 bg-red-500 text-white  hover:bg-red-700 rounded-lg   disabled:cursor-not-allowed transition"
             >
               <AiOutlineArrowLeft />
               <span>{t('previous')}</span>
             </button>
 
-            <span>
+            <span className="text-gray-700">
               {t('page')} {currentPage} {t('of')} {totalPages}
             </span>
 
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition space-x-2"
+              className="flex items-center px-4 py-2 bg-red-500 text-white  hover:bg-red-700 rounded-lg  disabled:cursor-not-allowed transition"
             >
               <span>{t('next')}</span>
               <AiOutlineArrowRight />
             </button>
           </div>
-
         </>
       ) : (
         <p className="text-center text-gray-500">{t('noCandleData')}</p>
