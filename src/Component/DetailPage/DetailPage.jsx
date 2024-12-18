@@ -17,7 +17,7 @@ export default function DetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetching details with caching logic
+
   const fetchDetail = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -43,7 +43,7 @@ export default function DetailPage() {
       }
     } catch (err) {
       console.error('Error fetching metadata:', err);
-      setError(err?.response ? `${t('errorFetchingData')}: ${err.response.statusText}` : t('networkError'));
+      setError(t('errorFetchingData'));
     } finally {
       setLoading(false);
     }
@@ -53,40 +53,27 @@ export default function DetailPage() {
     fetchDetail();
   }, [fetchDetail]);
 
-  // Fallback for missing fields
   const getFieldValue = (field) => field || t('notAvailable');
 
   const detailContent = detail && (
     <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg space-y-6">
       <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">{getFieldValue(detail.name)}</h2>
       <div className="space-y-3">
-        <p className="text-gray-700 dark:text-gray-300">
-          <strong className="font-semibold">{t('symbol')}:</strong> {getFieldValue(detail.symbol)}
-        </p>
-        <p className="text-gray-700 dark:text-gray-300">
-          <strong className="font-semibold">{t('type')}:</strong> {getFieldValue(detail.type)}
-        </p>
-        <p className="text-gray-700 dark:text-gray-300">
-          <strong className="font-semibold">{t('country')}:</strong> {getFieldValue(detail.countryName)}
-        </p>
-        <p className="text-gray-700 dark:text-gray-300">
-          <strong className="font-semibold">{t('currency')}:</strong> {getFieldValue(detail.currency)}
-        </p>
-        <p className="text-gray-700 dark:text-gray-300">
-          <strong className="font-semibold">{t('description')}:</strong> {getFieldValue(detail.description)}
-        </p>
-        <p className="text-gray-700 dark:text-gray-300">
-          <strong className="font-semibold">{t('industry')}:</strong> {getFieldValue(detail.industry)}
-        </p>
-        <p className="text-gray-700 dark:text-gray-300">
-          <strong className="font-semibold">{t('website')}:</strong> {getFieldValue(detail.website)}
-        </p>
-        <p className="text-gray-700 dark:text-gray-300">
-          <strong className="font-semibold">{t('marketCap')}:</strong> {getFieldValue(detail.marketCap)}
-        </p>
-        <p className="text-gray-700 dark:text-gray-300">
-          <strong className="font-semibold">{t('sector')}:</strong> {getFieldValue(detail.sector)}
-        </p>
+        {[
+          { label: t('symbol'), value: detail.symbol },
+          { label: t('type'), value: detail.type },
+          { label: t('country'), value: detail.countryName },
+          { label: t('currency'), value: detail.currency },
+          { label: t('description'), value: detail.description },
+          { label: t('industry'), value: detail.industry },
+          { label: t('website'), value: detail.website },
+          { label: t('marketCap'), value: detail.marketCap },
+          { label: t('sector'), value: detail.sector },
+        ].map(({ label, value }) => (
+          <p key={label} className="text-gray-700 dark:text-gray-300">
+            <strong className="font-semibold">{label}:</strong> {getFieldValue(value)}
+          </p>
+        ))}
       </div>
 
       <button
@@ -100,16 +87,12 @@ export default function DetailPage() {
   );
 
   const metaDescription = detail
-    ? `${detail.name} (${detail.symbol}) - A detailed view of the ${detail.type} from ${detail.countryName}, available in ${detail.currency}.`
+    ? `${detail.name} (${detail.symbol}) - ${t('metaDescription', {
+      type: detail.type,
+      country: detail.countryName,
+      currency: detail.currency,
+    })}`
     : t('loadingDetails');
-
-  if (loading) {
-    return (
-      <Suspense fallback={<div>Loading...</div>}>
-        <Loading />
-      </Suspense>
-    );
-  }
 
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -126,11 +109,17 @@ export default function DetailPage() {
         {t('back')}
       </button>
 
-      {error ? (
+      {loading ? (
+        <Suspense fallback={<div>{t('loading')}...</div>}>
+          <Loading />
+        </Suspense>
+      ) : error ? (
         <div className="text-center text-red-500">
           <p>{error}</p>
         </div>
-      ) : detailContent}
+      ) : (
+        detailContent
+      )}
     </div>
   );
 }

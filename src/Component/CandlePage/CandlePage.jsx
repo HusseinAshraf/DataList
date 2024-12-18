@@ -14,42 +14,44 @@ export default function CandlePage() {
   const [candles, setCandles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // Number of items per page
+  const itemsPerPage = 6;
 
-  const filteredCandles = useMemo(() => {
-    return candles.filter(
-      (candle) => candle.symbol.toLowerCase() === symbol.toLowerCase()
-    );
-  }, [candles, symbol]);
+  // Filter candles by symbol
+  const filteredCandles = useMemo(
+    () => candles.filter((candle) => candle.symbol.toLowerCase() === symbol.toLowerCase()),
+    [candles, symbol]
+  );
 
+  // Paginated candles
   const paginatedCandles = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredCandles.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredCandles, currentPage, itemsPerPage]);
 
-  const totalPages = useMemo(() => {
-    return Math.ceil(filteredCandles.length / itemsPerPage);
-  }, [filteredCandles.length, itemsPerPage]);
+  // Total pages calculation
+  const totalPages = useMemo(() => Math.ceil(filteredCandles.length / itemsPerPage), [
+    filteredCandles.length,
+    itemsPerPage,
+  ]);
 
+  // Fetch data
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null); // Reset error state
+      setError(null);
 
       const cachedData = localStorage.getItem(`candlesData-${symbol}`);
       if (cachedData) {
-        setCandles(JSON.parse(cachedData)); // Use cached data if available
+        setCandles(JSON.parse(cachedData));
       } else {
-        const response = await axios.get('/candle.json'); // Replace with actual endpoint
-
+        const response = await axios.get('/candle.json');
         if (response.data?.hits?.hits) {
-          const data = response.data.hits.hits.map((item) => item._source) || [];
+          const data = response.data.hits.hits.map((item) => item._source);
           setCandles(data);
+          localStorage.setItem(`candlesData-${symbol}`, JSON.stringify(data));
         } else {
-          setError(t('noCandleData')); // Handle case where no data is found
+          setError(t('noCandleData'));
         }
       }
     } catch (error) {
@@ -62,21 +64,19 @@ export default function CandlePage() {
 
   useEffect(() => {
     fetchData();
-  }, [symbol, fetchData]);
+  }, [fetchData]);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
-    window.scrollTo(0, 0); // Scroll to top when changing page
+    window.scrollTo(0, 0);
   };
 
-  if (loading) {
-    return <Loading />;
-  }
+  if (loading) return <Loading />;
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <p className="text-center text-red-500">{error}</p>
+      <div className="text-center py-8">
+        <p className="text-red-500">{error}</p>
       </div>
     );
   }
@@ -93,69 +93,57 @@ export default function CandlePage() {
           window.scrollTo(0, 0);
         }}
         className="mb-6 flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200"
-        alt="back"
       >
         <AiOutlineArrowLeft className="mr-2" />
         {t('back')}
       </button>
 
-      <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">
+      <h2 className="text-3xl font-bold mb-6">
         {t('candleDataFor')} {symbol}
       </h2>
 
       {paginatedCandles.length > 0 ? (
-        <div>
+        <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedCandles.map((candle, index) => (
-              <div
-                key={index}
-                className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200"
-              >
-                <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-                  <strong>{t('date')}:</strong>{' '}
-                  {new Date(candle.dateTime).toLocaleString()}
-                </p>
-                <div className="mt-2 space-y-1 text-gray-600 dark:text-gray-400">
-                  <p><strong>{t('open')}:</strong> {candle.startPrice.toLocaleString()}</p>
-                  <p><strong>{t('high')}:</strong> {candle.highestPrice.toLocaleString()}</p>
-                  <p><strong>{t('low')}:</strong> {candle.lowestPrice.toLocaleString()}</p>
-                  <p><strong>{t('close')}:</strong> {candle.endPrice.toLocaleString()}</p>
-                  <p><strong>{t('volume')}:</strong> {candle.volume.toLocaleString()}</p>
-                </div>
+              <div key={index} className="p-6 bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+                <p><strong>{t('date')}:</strong> {new Date(candle.dateTime).toLocaleString()}</p>
+                <p><strong>{t('open')}:</strong> {candle.startPrice.toLocaleString()}</p>
+                <p><strong>{t('high')}:</strong> {candle.highestPrice.toLocaleString()}</p>
+                <p><strong>{t('low')}:</strong> {candle.lowestPrice.toLocaleString()}</p>
+                <p><strong>{t('close')}:</strong> {candle.endPrice.toLocaleString()}</p>
+                <p><strong>{t('volume')}:</strong> {candle.volume.toLocaleString()}</p>
               </div>
             ))}
           </div>
 
-          {/* Pagination Controls */}
-          
-
-          <div className="mt-6 flex justify-center items-center space-x-2">
+          <div className="mt-6 flex justify-center items-center space-x-4">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed transition duration-200 shadow-lg space-x-2"
+              className="flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition space-x-2"
             >
-              <AiOutlineArrowLeft className="text-lg" />
+              <AiOutlineArrowLeft />
               <span>{t('previous')}</span>
             </button>
-            <span className="text-gray-800 dark:text-gray-100 font-semibold">
+
+            <span>
               {t('page')} {currentPage} {t('of')} {totalPages}
             </span>
+
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed transition duration-200 shadow-lg space-x-2"
+              className="flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition space-x-2"
             >
               <span>{t('next')}</span>
-              <AiOutlineArrowRight className="text-lg" />
+              <AiOutlineArrowRight />
             </button>
           </div>
 
-
-
-        </div>
+        </>
       ) : (
-        <p className="text-gray-500 text-center">{t('noCandleData')}</p>
+        <p className="text-center text-gray-500">{t('noCandleData')}</p>
       )}
     </div>
   );

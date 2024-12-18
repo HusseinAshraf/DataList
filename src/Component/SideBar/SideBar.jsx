@@ -7,7 +7,7 @@ function SideBar({ types, onFilterChange, selectedFilter }) {
   const { t } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Memoize the icons object to avoid recreation on each render
+  // Memoize icons object
   const icons = useMemo(() => ({
     'Common Stock': <FaChartLine />,
     Cryptocurrency: <FaBitcoin />,
@@ -19,26 +19,20 @@ function SideBar({ types, onFilterChange, selectedFilter }) {
     'Mutual fund': <FaCube />,
   }), []);
 
-  // Memoize toggle and close functions to avoid re-creating on each render
-  const toggleSidebar = useCallback(() => {
-    setIsSidebarOpen((prev) => !prev);
-  }, []);
-
-  const closeSidebar = useCallback(() => {
-    setIsSidebarOpen(false);
-  }, []);
+  // Toggle and close sidebar functions
+  const toggleSidebar = useCallback(() => setIsSidebarOpen((prev) => !prev), []);
+  const closeSidebar = useCallback(() => setIsSidebarOpen(false), []);
 
   return (
     <>
-      {/* Sidebar Toggle Button for Small Screens */}
+      {/* Sidebar Toggle Button */}
       <div className="sm:hidden">
         <button
           onClick={toggleSidebar}
           type="button"
-          className="inline-flex items-center p-2 mt-32 ml-7 text-sm text-gray-800 bg-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 hover:bg-gray-300"
-          alt="toggle button"  // إضافة alt هنا
+          className="inline-flex items-center p-2 text-gray-800 bg-gray-200 rounded-lg hover:bg-gray-300 focus:ring-2 focus:ring-gray-300"
         >
-          <span className="sr-only">Open sidebar</span>
+          <span className="sr-only">{t('toggleSidebar')}</span>
           <svg
             className="w-6 h-6"
             aria-hidden="true"
@@ -60,29 +54,26 @@ function SideBar({ types, onFilterChange, selectedFilter }) {
         <div
           onClick={closeSidebar}
           className="fixed inset-0 bg-black opacity-50 z-30"
-        ></div>
+        />
       )}
 
       {/* Sidebar */}
       <aside
-        id="sidebar-multi-level-sidebar"
-        className={`fixed top-0 left-0 z-40 w-64 h-full transition-transform bg-white ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} sm:translate-x-0 sm:w-64 lg:w-80`}
+        className={`fixed top-0 left-0 z-40 w-64 h-full bg-white dark:bg-gray-800 transition-transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } sm:translate-x-0`}
         aria-label="Sidebar"
       >
-        <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
-          <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-            {t('filterByType')}
-          </h2>
+        <div className="h-full px-4 py-6 bg-gray-50 dark:bg-gray-900">
+          <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">{t('filterByType')}</h2>
           <ul className="space-y-2">
             {/* All Filter Button */}
             <li>
               <button
                 onClick={() => onFilterChange(null)}
-                className={`flex items-center w-full px-4 py-2 rounded-lg transition-all ${selectedFilter === null
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-300 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
-                  } hover:bg-blue-700 focus:ring-2 focus:ring-blue-500`}
-                alt="all"  // إضافة alt هنا
+                className={`flex items-center w-full px-4 py-2 rounded-lg ${selectedFilter === null
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                  } hover:bg-blue-700`}
               >
                 <FaGlobe />
                 <span className="ml-2">{t('all')}</span>
@@ -91,16 +82,15 @@ function SideBar({ types, onFilterChange, selectedFilter }) {
 
             {/* Filter by Type */}
             {types.map((type) => (
-              <li key={type}> {/* استخدم النوع كـ "key" بدلاً من الفهرس */}
+              <li key={type}>
                 <button
                   onClick={() => onFilterChange(type)}
-                  className={`flex items-center w-full px-4 py-2 rounded-lg transition-all ${selectedFilter === type
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-300 text-gray-900 dark:bg-gray-700 dark:text-gray-100'
-                    } hover:bg-blue-700 focus:ring-2 focus:ring-blue-500`}
-                  alt={t(type)}  // إضافة alt هنا
+                  className={`flex items-center w-full px-4 py-2 rounded-lg ${selectedFilter === type
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                    } hover:bg-blue-700`}
                 >
-                  {icons[type] || <FaGlobe />} {/* التأكد من وجود الأيقونة */}
+                  {icons[type] || <FaGlobe />}
                   <span className="ml-2">{t(type)}</span>
                 </button>
               </li>
