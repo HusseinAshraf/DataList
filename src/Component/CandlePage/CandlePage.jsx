@@ -32,15 +32,6 @@ export default function CandlePage() {
     itemsPerPage,
   ]);
 
-  const clearLocalStorage = () => {
-    const keys = Object.keys(localStorage);
-    keys.forEach((key) => {
-      if (key.startsWith('candlesData-')) {
-        localStorage.removeItem(key);
-      }
-    });
-  };
-
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
@@ -53,17 +44,8 @@ export default function CandlePage() {
         const response = await axios.get('/candle.json');
         if (response.data?.hits?.hits) {
           const data = response.data.hits.hits.map((item) => item._source);
-
-          // Clear old data before storing new data
-          clearLocalStorage();
-
-          // Check the size of the data before saving to localStorage
-          if (JSON.stringify(data).length < 5000000) { // 5MB limit
-            setCandles(data);
-            localStorage.setItem(`candlesData-${symbol}`, JSON.stringify(data));
-          } else {
-            setError(t('dataTooLargeError')); // Custom error for large data
-          }
+          setCandles(data);
+          localStorage.setItem(`candlesData-${symbol}`, JSON.stringify(data));
         } else {
           setError(t('noCandleData'));
         }
@@ -91,9 +73,6 @@ export default function CandlePage() {
     return (
       <div className="text-center py-8">
         <p className="text-red-600 text-lg font-medium">{error}</p>
-        {error === t('dataTooLargeError') && (
-          <p className="text-sm text-gray-600">{t('reduceDataSize')}</p>
-        )}
       </div>
     );
   }
