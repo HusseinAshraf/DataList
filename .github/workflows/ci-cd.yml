@@ -13,32 +13,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. التحقق من الكود
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+      # 1. التحقق من الكود
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    # 2. إعداد Node.js
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 16
+      # 2. إعداد Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-    # 3. تثبيت الحزم
-    - name: Install Dependencies
-      run: npm install
+      # 3. بناء صورة Docker
+      - name: Build Docker image
+        run: |
+          docker build -t my-react-vite-app .
 
-    # 4. تشغيل الاختبارات
-    - name: Run Tests
-      run: npm test
+      # 4. تشغيل الحاوية (container)
+      - name: Run Docker container
+        run: |
+          docker run -d -p 8080:80 my-react-vite-app
+        # ربط المنفذ 8080 في جهازك بالمنفذ 80 داخل الحاوية
 
-    # 5. بناء التطبيق
-    - name: Build Application
-      run: npm run build
+      # 5. تشغيل الاختبارات داخل الحاوية (اختياري)
+      - name: Run Tests in Docker container
+        run: |
+          docker exec my-react-vite-app npm test
+
+      # 6. إيقاف الحاوية بعد انتهاء الاختبارات
+      - name: Stop Docker container
+        run: |
+          docker stop my-react-vite-app
 
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
     steps:
-    # نشر التطبيق (إذا كان لديك خطوة نشر إلى منصة)
-    - name: Deploy (Optional)
-      run: echo "Add your deployment script here"
+      # نشر التطبيق
+      - name: Checkout Repository (Deploy)
+        uses: actions/checkout@v3
+
+      # نشر التطبيق (إذا كان لديك خطوة نشر إلى منصة)
+      - name: Deploy to Production
+        run: |
+          echo "Starting deployment to production..."
+          # ضع هنا سكربت النشر الفعلي
+          echo "Deployment Complete!"
+        env:
+          DEPLOYMENT_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
