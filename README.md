@@ -78,6 +78,23 @@ To set up the project locally, follow these steps:
 
 Make sure you have [Node.js](https://nodejs.org/en/) installed on your machine.
 
+##Install Dependencies
+npm install
+
+##Run the Application
+Start the development server: npm run dev
+
+##Contributing
+We welcome contributions! Please fork the repository and submit a pull request with a clear description of your changes.
+
+Steps for contributing:
+Fork the repository.
+Create a new branch (git checkout -b feature-name).
+Make your changes.
+Commit your changes (git commit -am 'Add new feature').
+Push to your branch (git push origin feature-name).
+Create a pull request.
+
 ### Clone the Repository
 
 Clone the repository to your local machine:
