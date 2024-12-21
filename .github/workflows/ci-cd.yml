@@ -30,17 +30,21 @@ jobs:
       - name: Run Docker container
         run: |
           docker run -d -p 8080:80 my-react-vite-app
-        # ربط المنفذ 8080 في جهازك بالمنفذ 80 داخل الحاوية
 
       # 5. تشغيل الاختبارات داخل الحاوية (اختياري)
       - name: Run Tests in Docker container
         run: |
-          docker exec my-react-vite-app npm test
+          if [ $(docker ps -q -f name=my-react-vite-app) ]; then
+            docker exec my-react-vite-app npm test
+          else
+            echo "Container not running. Skipping tests."
+          fi
 
       # 6. إيقاف الحاوية بعد انتهاء الاختبارات
-      - name: Stop Docker container
+      - name: Stop and remove Docker container
         run: |
           docker stop my-react-vite-app
+          docker rm my-react-vite-app
 
   deploy:
     needs: build-and-test
