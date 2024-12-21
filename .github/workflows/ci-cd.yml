@@ -43,8 +43,12 @@ jobs:
       # 6. إيقاف الحاوية بعد انتهاء الاختبارات
       - name: Stop and remove Docker container
         run: |
-          docker stop my-react-vite-app
-          docker rm my-react-vite-app
+          if [ $(docker ps -q -f name=my-react-vite-app) ]; then
+            docker stop my-react-vite-app
+            docker rm my-react-vite-app
+          else
+            echo "Container is not running."
+          fi
 
   deploy:
     needs: build-and-test
