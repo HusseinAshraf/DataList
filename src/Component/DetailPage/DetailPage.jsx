@@ -23,16 +23,21 @@ export default function DetailPage() {
     setError(null);
 
     try {
-      const { data } = await axios.get('/metadata.json');
-      const detailData = data.hits.hits.find(
-        (item) => item._source.symbol === symbol
-      )?._source;
-
-      if (detailData) {
-        console.log('Detail data:', detailData);
-        setDetail(detailData);
+      const cachedData = sessionStorage.getItem(`detail-${symbol}`);
+      if (cachedData) {
+        setDetail(JSON.parse(cachedData));
       } else {
-        setError(t('detailsNotFound'));
+        const { data } = await axios.get('/metadata.json');
+        const detailData = data.hits.hits.find(
+          (item) => item._source.symbol === symbol
+        )?._source;
+
+        if (detailData) {
+          sessionStorage.setItem(`detail-${symbol}`, JSON.stringify(detailData));
+          setDetail(detailData);
+        } else {
+          setError(t('detailsNotFound'));
+        }
       }
     } catch (err) {
       console.error('Error fetching metadata:', err);
@@ -102,14 +107,18 @@ export default function DetailPage() {
 
       <div
         id="main-content"
-        className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg space-y-6"
-        style={{ opacity: 1, transition: 'opacity 0.5s ease-in-out' }} // Transition for better LCP
+        className="p-4 bg-white dark:bg-gray-800 rounded-md shadow-md space-y-6" // Reduced shadows for faster rendering
+        style={{
+          minHeight: '300px',
+          opacity: 1,
+          animation: 'fadeIn 0.5s ease-in-out',
+        }}
       >
-        <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
           {detail.name || t('notAvailable')}
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700 text-lg">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 text-lg">
           {renderField(t('symbol'), detail.symbol)}
           {renderField(t('code'), detail.code)}
           {renderField(t('exchange'), detail.exchange)}
@@ -139,10 +148,10 @@ export default function DetailPage() {
           </p>
         )}
 
-        <div className="mt-8 text-center">
+        <div className="mt-6 text-center">
           <button
             onClick={() => navigate(`/candle/${detail.symbol}`)}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-md shadow hover:shadow-lg transition duration-300 transform hover:scale-105"
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-md shadow hover:shadow-lg transition duration-300 transform hover:scale-105"
           >
             <AiOutlineLineChart className="mr-2 inline" />
             {t('viewCandleData')}
