@@ -59,7 +59,7 @@ function SideBar({ types, onFilterChange, selectedFilter }) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-40 w-64 h-full bg-white dark:bg-gray-800 transition-transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`sidebar fixed top-0 left-0 z-40 w-64 h-full bg-white dark:bg-gray-800 transition-transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
           } sm:translate-x-0`}
         aria-label="Sidebar"
       >

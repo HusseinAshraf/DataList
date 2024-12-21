@@ -120,12 +120,24 @@ export default function DataList() {
           <header className="flex flex-col md:flex-row justify-between items-center mb-6">
             <h1 className="text-2xl sm:text-3xl font-extrabold">{t('dataList')}</h1>
             <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-4 sm:mt-0">
-              <input
-                type="text"
-                placeholder={t('searchPlaceholder')}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="w-full sm:w-auto px-4 py-2 border rounded-lg focus:ring-2"
-              />
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  placeholder={t('searchPlaceholder')}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="w-full sm:w-auto px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg placeholder-gray-400"
+                  style={{
+                    backgroundColor: '#f9f9f9', // Lighter background for input field
+                    borderColor: '#d1d1d1', // Slightly darker border for better contrast
+                  }}
+                />
+                <button
+                  onClick={() => handleSearch(searchTerm)}
+                  className="flex items-center justify-center p-2 ml-2 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none"
+                >
+                  <i className="fas fa-search"></i>
+                </button>
+              </div>
               <Suspense fallback={<div>{t('loadingLanguageSwitcher')}...</div>}>
                 <LanguageSwitcher />
               </Suspense>
@@ -152,9 +164,6 @@ export default function DataList() {
                     <p>{t('country')}: {item.country || t('notAvailable')}</p>
                     <p>{t('currency')}: {item.currency || t('notAvailable')}</p>
                   </div>
-
-
-
                 ))
               ) : (
                 <p className="text-center">{t('noData')}</p>

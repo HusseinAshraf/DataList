@@ -4,6 +4,14 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: "MyFont", sans-serif;
+h1,
+h2,
+h3 {
+  font-family: "Poppins", sans-serif;
+}
+p {
+  font-family: "Roboto", sans-serif; /* يمكن استخدام خط مختلف */
+}
+.sidebar {
+  font-family: "Poppins", sans-serif;
 }
