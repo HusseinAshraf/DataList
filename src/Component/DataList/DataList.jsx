@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import debounce from 'lodash.debounce';
 
+// Lazy-loaded components
 const SideBar = memo(React.lazy(() => import('../SideBar/SideBar.jsx')));
 const LanguageSwitcher = memo(React.lazy(() => import('../LanguageSwitcher/LanguageSwitcher.jsx')));
 
@@ -17,11 +18,13 @@ export default function DataList() {
   const [selectedFilter, setSelectedFilter] = useState(null);
   const navigate = useNavigate();
 
+  // Types for filtering
   const types = useMemo(() => [
     'Common Stock', 'Cryptocurrency', 'Exchange traded commodity',
     'Exchange traded fund', 'Fund', 'Index', 'Commodity', 'Mutual fund'
   ], []);
 
+  // Fetch data and cache it in localStorage
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -47,6 +50,7 @@ export default function DataList() {
     fetchData();
   }, []);
 
+  // Filtered data based on search and filter selection
   const filteredData = useMemo(() => {
     return exchangeData.filter((item) => {
       const matchesFilter = selectedFilter
@@ -59,15 +63,19 @@ export default function DataList() {
     });
   }, [exchangeData, searchTerm, selectedFilter]);
 
+  // Debounced search handler
   const handleSearch = useCallback(
     debounce((value) => setSearchTerm(value), 300),
     []
   );
 
+  // Filter change handler
   const handleFilterChange = (filter) => setSelectedFilter(filter);
 
+  // Navigate to item details
   const handleItemClick = (symbol) => navigate(`/details/${symbol}`);
 
+  // Highlight searched text
   const highlightText = (text, term) => {
     if (!term) return text;
     const regex = new RegExp(`(${term})`, 'gi');
@@ -90,6 +98,7 @@ export default function DataList() {
     );
   };
 
+  // Meta description for SEO
   const metaDescription = useMemo(() =>
     `Find the best exchange data${searchTerm ? ` for "${searchTerm}"` : ''}${selectedFilter ? ` filtered by ${selectedFilter}` : ''}.`,
     [searchTerm, selectedFilter]
@@ -125,18 +134,12 @@ export default function DataList() {
                   type="text"
                   placeholder={t('searchPlaceholder')}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full sm:w-auto px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg placeholder-gray-400"
+                  className="w-full sm:w-auto px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out"
                   style={{
-                    backgroundColor: '#f9f9f9', // Lighter background for input field
-                    borderColor: '#d1d1d1', // Slightly darker border for better contrast
+                    backgroundColor: '#f9f9f9',
+                    borderColor: '#d1d1d1',
                   }}
                 />
-                <button
-                  onClick={() => handleSearch(searchTerm)}
-                  className="flex items-center justify-center p-2 ml-2 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none"
-                >
-                  <i className="fas fa-search"></i>
-                </button>
               </div>
               <Suspense fallback={<div>{t('loadingLanguageSwitcher')}...</div>}>
                 <LanguageSwitcher />
@@ -153,7 +156,7 @@ export default function DataList() {
                 filteredData.map((item) => (
                   <div
                     key={item.symbol}
-                    className="p-4 bg-white rounded-lg shadow-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                    className="p-4 bg-white rounded-lg shadow-lg cursor-pointer transition-all duration-200"
                     onClick={() => handleItemClick(item.symbol)}
                   >
                     <strong className="text-lg">
