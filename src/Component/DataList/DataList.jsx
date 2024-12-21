@@ -135,6 +135,7 @@ export default function DataList() {
                 <button
                   onClick={() => handleSearch(searchTerm)}
                   className="flex items-center justify-center p-2 ml-2 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none"
+                  aria-label={t('searchButton')} // تم إضافة aria-label
                 >
                   {/* أيقونة البحث */}
                   <i className="fas fa-search"></i>
