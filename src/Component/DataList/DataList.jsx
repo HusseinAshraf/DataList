@@ -156,7 +156,7 @@ export default function DataList() {
                 filteredData.map((item) => (
                   <div
                     key={item.symbol}
-                    className="p-4 bg-white rounded-lg shadow-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                    className="p-4 bg-white rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-transform duration-200"
                     onClick={() => handleItemClick(item.symbol)}
                   >
                     <strong className="text-lg">
@@ -167,6 +167,7 @@ export default function DataList() {
                     <p>{t('country')}: {item.country || t('notAvailable')}</p>
                     <p>{t('currency')}: {item.currency || t('notAvailable')}</p>
                   </div>
+
                 ))
               ) : (
                 <p className="text-center">{t('noData')}</p>
