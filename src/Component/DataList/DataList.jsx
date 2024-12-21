@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import debounce from 'lodash.debounce';
+import '@fortawesome/fontawesome-free/css/all.min.css'; // استيراد مكتبة Font Awesome
 
 const SideBar = memo(React.lazy(() => import('../SideBar/SideBar.jsx')));
 const LanguageSwitcher = memo(React.lazy(() => import('../LanguageSwitcher/LanguageSwitcher.jsx')));
@@ -13,7 +14,6 @@ export default function DataList() {
   const { t } = useTranslation();
   const [exchangeData, setExchangeData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchLoading, setSearchLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState(null);
   const navigate = useNavigate();
@@ -60,18 +60,10 @@ export default function DataList() {
     });
   }, [exchangeData, searchTerm, selectedFilter]);
 
-  const handleSearch = useCallback(
-    debounce((value) => {
-      setSearchLoading(false);
-      setSearchTerm(value);
-    }, 300),
+  const handleSearchInputChange = useCallback(
+    debounce((value) => setSearchTerm(value), 300),
     []
   );
-
-  const handleSearchInputChange = (value) => {
-    setSearchLoading(true);
-    handleSearch(value);
-  };
 
   const handleFilterChange = (filter) => setSelectedFilter(filter);
 
@@ -136,13 +128,17 @@ export default function DataList() {
                   onChange={(e) => handleSearchInputChange(e.target.value)}
                   className="w-full sm:w-auto px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg placeholder-gray-400"
                   style={{
-                    backgroundColor: '#f9f9f9', // Lighter background for input field
-                    borderColor: '#d1d1d1', // Slightly darker border for better contrast
+                    backgroundColor: '#f9f9f9',
+                    borderColor: '#d1d1d1',
                   }}
                 />
-                {searchLoading && (
-                  <span className="ml-2 text-blue-500">{t('searching')}...</span>
-                )}
+                <button
+                  onClick={() => handleSearch(searchTerm)}
+                  className="flex items-center justify-center p-2 ml-2 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none"
+                >
+                  {/* أيقونة البحث */}
+                  <i className="fas fa-search"></i>
+                </button>
               </div>
               <Suspense fallback={<div>{t('loadingLanguageSwitcher')}...</div>}>
                 <LanguageSwitcher />
