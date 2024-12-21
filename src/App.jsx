@@ -18,7 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<DataList />} />
           <Route path="/details/:symbol" element={<DetailPage />} />
-          <Route path="/candle/:symbol" element={<CandlePage />} /> {/* تعديل المسار هنا */}
+          <Route path="/candle/:symbol" element={<CandlePage />} /> 
         </Routes>
       </Suspense>
     </Router>

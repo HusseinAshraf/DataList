@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react'; // إضافة useMemo هنا
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 import axios from 'axios';
@@ -6,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import Loading from '../Loading/Loading';
 import { Helmet } from 'react-helmet';
 
-// فتح قاعدة بيانات IndexedDB
 const openDb = () => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('candlesDB', 1);
@@ -21,7 +21,7 @@ const openDb = () => {
   });
 };
 
-// جلب البيانات من IndexedDB
+
 const fetchDataFromDb = async (symbol) => {
   const db = await openDb();
   const transaction = db.transaction('candles', 'readonly');
@@ -33,7 +33,7 @@ const fetchDataFromDb = async (symbol) => {
   });
 };
 
-// تخزين البيانات في IndexedDB
+
 const saveDataToDb = async (symbol, data) => {
   const db = await openDb();
   const transaction = db.transaction('candles', 'readwrite');
