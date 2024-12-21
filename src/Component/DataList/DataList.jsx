@@ -22,7 +22,6 @@ export default function DataList() {
     'Exchange traded fund', 'Fund', 'Index', 'Commodity', 'Mutual fund'
   ], []);
 
-  // Fetch data with caching logic
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -48,7 +47,6 @@ export default function DataList() {
     fetchData();
   }, []);
 
-  // Filtered data based on search and filter
   const filteredData = useMemo(() => {
     return exchangeData.filter((item) => {
       const matchesFilter = selectedFilter
@@ -61,7 +59,6 @@ export default function DataList() {
     });
   }, [exchangeData, searchTerm, selectedFilter]);
 
-  // Handlers
   const handleSearch = useCallback(
     debounce((value) => setSearchTerm(value), 300),
     []
@@ -71,6 +68,28 @@ export default function DataList() {
 
   const handleItemClick = (symbol) => navigate(`/details/${symbol}`);
 
+  const highlightText = (text, term) => {
+    if (!term) return text;
+    const regex = new RegExp(`(${term})`, 'gi');
+    const parts = text.split(regex);
+    return parts.map((part, index) =>
+      regex.test(part) ? (
+        <span
+          key={index}
+          style={{
+            backgroundColor: 'yellow',
+            borderRadius: '4px',
+            padding: '0 2px',
+          }}
+        >
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
+
   const metaDescription = useMemo(() =>
     `Find the best exchange data${searchTerm ? ` for "${searchTerm}"` : ''}${selectedFilter ? ` filtered by ${selectedFilter}` : ''}.`,
     [searchTerm, selectedFilter]
@@ -78,68 +97,72 @@ export default function DataList() {
 
   return (
     <>
-    <Helmet>
-      <title>{t('dataList')}</title>
-      <meta name="description" content={metaDescription} />
-    </Helmet>
-  
-    <div className="flex flex-col sm:flex-row">
-      {/* Sidebar */}
-      <div className="md:block w-64">
-        <Suspense fallback={<div>{t('loadingSidebar')}...</div>}>
-          <SideBar
-            types={types}
-            onFilterChange={handleFilterChange}
-            selectedFilter={selectedFilter}
-          />
-        </Suspense>
-      </div>
-  
-      {/* Main Content */}
-      <div className="flex-1 p-4 sm:p-6">
-        {/* Header */}
-        <header className="flex flex-col md:flex-row justify-between items-center mb-6">
-          <h1 className="text-2xl sm:text-3xl font-extrabold">{t('dataList')}</h1>
-          <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-4 sm:mt-0">
-            <input
-              type="text"
-              placeholder={t('searchPlaceholder')}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="w-full sm:w-auto px-4 py-2 border rounded-lg focus:ring-2"
-            />
-            <Suspense fallback={<div>{t('loadingLanguageSwitcher')}...</div>}>
-              <LanguageSwitcher />
-            </Suspense>
-          </div>
-        </header>
-  
-        {/* Content */}
-        {loading ? (
-          <div className="text-center">{t('loading')}...</div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredData.length > 0 ? (
-              filteredData.map((item) => (
-                <div
-                  key={item.symbol}
-                  className="p-4 bg-white rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-transform"
-                  onClick={() => handleItemClick(item.symbol)}
-                >
-                  <strong className="text-lg">{item.name || t('notAvailable')}</strong>
-                  <p>({item.symbol})</p>
-                  <p>{t('type')}: {item.type || t('notAvailable')}</p>
-                  <p>{t('country')}: {item.country || t('notAvailable')}</p>
-                  <p>{t('currency')}: {item.currency || t('notAvailable')}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-center">{t('noData')}</p>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  </>
+      <Helmet>
+        <title>{t('dataList')}</title>
+        <meta name="description" content={metaDescription} />
+      </Helmet>
 
+      <div className="flex flex-col sm:flex-row">
+        {/* Sidebar */}
+        <div className="md:block w-64">
+          <Suspense fallback={<div>{t('loadingSidebar')}...</div>}>
+            <SideBar
+              types={types}
+              onFilterChange={handleFilterChange}
+              selectedFilter={selectedFilter}
+            />
+          </Suspense>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 p-4 sm:p-6">
+          {/* Header */}
+          <header className="flex flex-col md:flex-row justify-between items-center mb-6">
+            <h1 className="text-2xl sm:text-3xl font-extrabold">{t('dataList')}</h1>
+            <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-4 sm:mt-0">
+              <input
+                type="text"
+                placeholder={t('searchPlaceholder')}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="w-full sm:w-auto px-4 py-2 border rounded-lg focus:ring-2"
+              />
+              <Suspense fallback={<div>{t('loadingLanguageSwitcher')}...</div>}>
+                <LanguageSwitcher />
+              </Suspense>
+            </div>
+          </header>
+
+          {/* Content */}
+          {loading ? (
+            <div className="text-center">{t('loading')}...</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {filteredData.length > 0 ? (
+                filteredData.map((item) => (
+                  <div
+                    key={item.symbol}
+                    className="p-4 bg-white rounded-lg shadow-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                    onClick={() => handleItemClick(item.symbol)}
+                  >
+                    <strong className="text-lg">
+                      {highlightText(item.name || t('notAvailable'), searchTerm)}
+                    </strong>
+                    <p>({item.symbol})</p>
+                    <p>{t('type')}: {item.type || t('notAvailable')}</p>
+                    <p>{t('country')}: {item.country || t('notAvailable')}</p>
+                    <p>{t('currency')}: {item.currency || t('notAvailable')}</p>
+                  </div>
+
+
+
+                ))
+              ) : (
+                <p className="text-center">{t('noData')}</p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
