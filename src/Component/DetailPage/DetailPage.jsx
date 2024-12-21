@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useCallback, Suspense, lazy } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
-import { AiOutlineLineChart } from 'react-icons/ai';  
+import { AiOutlineLineChart } from 'react-icons/ai';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
@@ -100,7 +100,11 @@ export default function DetailPage() {
         {t('back')}
       </button>
 
-      <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg space-y-6">
+      <div
+        id="main-content"
+        className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg space-y-6"
+        style={{ opacity: 1, transition: 'opacity 0.5s ease-in-out' }} // Transition for better LCP
+      >
         <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
           {detail.name || t('notAvailable')}
         </h2>
