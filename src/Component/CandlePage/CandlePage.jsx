@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react'; // إضافة useMemo هنا
 import { useParams, useNavigate } from 'react-router-dom';
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 import axios from 'axios';
@@ -7,7 +6,42 @@ import { useTranslation } from 'react-i18next';
 import Loading from '../Loading/Loading';
 import { Helmet } from 'react-helmet';
 
-export default function CandlePage() {
+// فتح قاعدة بيانات IndexedDB
+const openDb = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('candlesDB', 1);
+    request.onerror = () => reject('IndexedDB failed');
+    request.onsuccess = () => resolve(request.result);
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('candles')) {
+        db.createObjectStore('candles', { keyPath: 'symbol' });
+      }
+    };
+  });
+};
+
+// جلب البيانات من IndexedDB
+const fetchDataFromDb = async (symbol) => {
+  const db = await openDb();
+  const transaction = db.transaction('candles', 'readonly');
+  const store = transaction.objectStore('candles');
+  return new Promise((resolve, reject) => {
+    const request = store.get(symbol);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject('Failed to fetch data from DB');
+  });
+};
+
+// تخزين البيانات في IndexedDB
+const saveDataToDb = async (symbol, data) => {
+  const db = await openDb();
+  const transaction = db.transaction('candles', 'readwrite');
+  const store = transaction.objectStore('candles');
+  store.put({ symbol, data });
+};
+
+const CandlePage = () => {
   const { symbol } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -38,21 +72,16 @@ export default function CandlePage() {
       setLoading(true);
       setError(null);
 
-      const cachedData = localStorage.getItem(`candlesData-${symbol}`);
+      const cachedData = await fetchDataFromDb(symbol);
       if (cachedData) {
-        setCandles(JSON.parse(cachedData));
+        setCandles(cachedData.data);
       } else {
         const response = await axios.get('/candle.json');
-        if (response.data?.hits?.hits) {
-          const data = response.data.hits.hits.map((item) => item._source);
-          setCandles(data);
-          localStorage.setItem(`candlesData-${symbol}`, JSON.stringify(data));
-        } else {
-          setError(t('noCandleData'));
-        }
+        const data = response.data.hits.hits.map((item) => item._source);
+        setCandles(data);
+        saveDataToDb(symbol, data);
       }
     } catch (error) {
-      console.error('Error fetching candle data:', error);
       setError(t('unexpectedError'));
     } finally {
       setLoading(false);
@@ -105,7 +134,7 @@ export default function CandlePage() {
             {paginatedCandles.map((candle, index) => (
               <div
                 key={index}
-                className="p-6 bg-white rounded-lg shadow-lg hover:shadow-xl transition-transform"
+                className="p-6 bg-white rounded-lg shadow-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl"
               >
                 <p className="text-gray-700">
                   <strong>{t('date')}:</strong> {new Date(candle.dateTime).toLocaleString()}
@@ -133,7 +162,7 @@ export default function CandlePage() {
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="flex items-center px-4 py-2 bg-red-500 text-white  hover:bg-red-700 rounded-lg   disabled:cursor-not-allowed transition"
+              className="flex items-center px-4 py-2 bg-red-500 text-white hover:bg-red-700 rounded-lg disabled:cursor-not-allowed transition"
             >
               <AiOutlineArrowLeft />
               <span>{t('previous')}</span>
@@ -146,7 +175,7 @@ export default function CandlePage() {
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="flex items-center px-4 py-2 bg-red-500 text-white  hover:bg-red-700 rounded-lg  disabled:cursor-not-allowed transition"
+              className="flex items-center px-4 py-2 bg-red-500 text-white hover:bg-red-700 rounded-lg disabled:cursor-not-allowed transition"
             >
               <span>{t('next')}</span>
               <AiOutlineArrowRight />
@@ -158,4 +187,6 @@ export default function CandlePage() {
       )}
     </div>
   );
-}
+};
+
+export default CandlePage;

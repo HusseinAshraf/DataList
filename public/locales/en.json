@@ -22,6 +22,15 @@
   "low": "Low",
   "close": "Close",
   "volume": "Volume",
-  "noCandleData": "No candle data available for"
-
+  "noCandleData": "No candle data available for",
+  "detailsNotFound": "Details not found",
+  "errorFetchingData": "Error fetching data",
+  "itemNotFound": "Item not found",
+  "code": "Code",
+  "exchange": "Exchange",
+  "isin": "ISIN",
+  "validUntil": "Valid Until",
+  "countryIso": "Country ISO",
+  "companyWebsite": "Company Website",
+  "viewCandleData": "View Candle Data"
 }

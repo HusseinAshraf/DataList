@@ -41,5 +41,14 @@
   "industry": "Branche",
   "website": "Webseite",
   "marketCap": "Marktkapitalisierung",
-  "sector": "Sektor"
+  "sector": "Sektor",
+  "itemNotFound": "Artikel nicht gefunden",
+  "code": "Code",
+  "exchange": "Börse",
+  "isin": "ISIN",
+  "validUntil": "Gültig bis",
+  "countryIso": "Land ISO",
+  "companyWebsite": "Unternehmenswebsite",
+  "viewCandleData": "Kerzendaten anzeigen"
+
 }
