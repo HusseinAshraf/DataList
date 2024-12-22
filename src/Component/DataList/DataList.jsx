@@ -31,10 +31,13 @@ export default function DataList() {
         const currentTime = Date.now();
 
         if (cachedData && cachedTime && currentTime - cachedTime <= 3600000) {
+          // إذا كانت البيانات مخزنة في الذاكرة وكانت لا تزال صالحة، استخدمها
           setExchangeData(JSON.parse(cachedData));
         } else {
+          // إذا لم تكن البيانات مخزنة أو انتهت صلاحيتها، احصل عليها من الخادم
           const { data } = await axios.get('/exchange.json');
           const formattedData = data.hits.hits.map((item) => item._source);
+          // تخزين البيانات في الذاكرة مع الطابع الزمني
           localStorage.setItem('exchangeData', JSON.stringify(formattedData));
           localStorage.setItem('exchangeDataTimestamp', currentTime);
           setExchangeData(formattedData);
@@ -167,8 +170,6 @@ export default function DataList() {
                     <p>{t('country')}: {item.country || t('notAvailable')}</p>
                     <p>{t('currency')}: {item.currency || t('notAvailable')}</p>
                   </div>
-
-
                 ))
               ) : (
                 <p className="text-center">{t('noData')}</p>
