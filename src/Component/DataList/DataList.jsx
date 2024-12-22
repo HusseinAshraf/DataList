@@ -156,7 +156,7 @@ export default function DataList() {
                 filteredData.map((item) => (
                   <div
                     key={item.symbol}
-                    className="p-4 bg-white rounded-md shadow-md cursor-pointer"
+                    className="p-4 bg-white rounded-md shadow-md cursor-pointer hover:shadow-xl transition-transform duration-200"
                     onClick={() => handleItemClick(item.symbol)}
                   >
                     <strong className="text-lg">
