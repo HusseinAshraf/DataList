@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import debounce from 'lodash.debounce';
-import '@fortawesome/fontawesome-free/css/all.min.css'; // استيراد مكتبة Font Awesome
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const SideBar = memo(React.lazy(() => import('../SideBar/SideBar.jsx')));
 const LanguageSwitcher = memo(React.lazy(() => import('../LanguageSwitcher/LanguageSwitcher.jsx')));
@@ -31,13 +31,13 @@ export default function DataList() {
         const currentTime = Date.now();
 
         if (cachedData && cachedTime && currentTime - cachedTime <= 3600000) {
-          // إذا كانت البيانات مخزنة في الذاكرة وكانت لا تزال صالحة، استخدمها
+
           setExchangeData(JSON.parse(cachedData));
         } else {
-          // إذا لم تكن البيانات مخزنة أو انتهت صلاحيتها، احصل عليها من الخادم
+
           const { data } = await axios.get('/exchange.json');
           const formattedData = data.hits.hits.map((item) => item._source);
-          // تخزين البيانات في الذاكرة مع الطابع الزمني
+
           localStorage.setItem('exchangeData', JSON.stringify(formattedData));
           localStorage.setItem('exchangeDataTimestamp', currentTime);
           setExchangeData(formattedData);
@@ -138,9 +138,9 @@ export default function DataList() {
                 <button
                   onClick={() => handleSearch(searchTerm)}
                   className="flex items-center justify-center p-2 ml-2 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none"
-                  aria-label={t('searchButton')} // تم إضافة aria-label
+                  aria-label={t('searchButton')}
                 >
-                  {/* أيقونة البحث */}
+
                   <i className="fas fa-search"></i>
                 </button>
               </div>

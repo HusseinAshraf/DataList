@@ -134,7 +134,7 @@ const CandlePage = () => {
             {paginatedCandles.map((candle, index) => (
               <div
                 key={index}
-                className="p-6 bg-white rounded-lg shadow-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                className="p-6 bg-white border-2 border-gray-100 rounded-lg shadow-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <p className="text-gray-700">
                   <strong>{t('date')}:</strong> {new Date(candle.dateTime).toLocaleString()}
