@@ -100,7 +100,7 @@ export default function DetailPage() {
         {t('back')}
       </button>
 
-      <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg space-y-6">
+      <div className="p-6 bg-white border-2 border-gray-100 dark:bg-gray-800 rounded-lg shadow-lg space-y-6">
         <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
           {detail.name || t('notAvailable')}
         </h2>
