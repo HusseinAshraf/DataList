@@ -30,6 +30,7 @@
     "react-router-dom": "^7.0.2",
     "react-window": "^1.8.10",
     "react-world-flags": "^1.6.0",
+    "recharts": "^2.15.0",
     "use-debounce": "^10.0.4"
   },
   "devDependencies": {

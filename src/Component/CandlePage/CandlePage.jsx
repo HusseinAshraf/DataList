@@ -1,11 +1,21 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
+import { AiOutlineArrowLeft } from 'react-icons/ai';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import Loading from '../Loading/Loading';
 import { Helmet } from 'react-helmet';
+import {
+  ResponsiveContainer,
+  ComposedChart,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Bar,
+  Line,
+} from 'recharts';
 
 const openDb = () => {
   return new Promise((resolve, reject) => {
@@ -21,7 +31,6 @@ const openDb = () => {
   });
 };
 
-
 const fetchDataFromDb = async (symbol) => {
   const db = await openDb();
   const transaction = db.transaction('candles', 'readonly');
@@ -32,7 +41,6 @@ const fetchDataFromDb = async (symbol) => {
     request.onerror = () => reject('Failed to fetch data from DB');
   });
 };
-
 
 const saveDataToDb = async (symbol, data) => {
   const db = await openDb();
@@ -62,11 +70,6 @@ const CandlePage = () => {
     return filteredCandles.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredCandles, currentPage, itemsPerPage]);
 
-  const totalPages = useMemo(() => Math.ceil(filteredCandles.length / itemsPerPage), [
-    filteredCandles.length,
-    itemsPerPage,
-  ]);
-
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
@@ -91,11 +94,6 @@ const CandlePage = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-    window.scrollTo(0, 0);
-  };
 
   if (loading) return <Loading />;
 
@@ -128,60 +126,18 @@ const CandlePage = () => {
         {t('candleDataFor')} {symbol}
       </h2>
 
-      {paginatedCandles.length > 0 ? (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {paginatedCandles.map((candle, index) => (
-              <div
-                key={index}
-                className="p-6 bg-white border-2 border-gray-100 rounded-lg shadow-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <p className="text-gray-700">
-                  <strong>{t('date')}:</strong> {new Date(candle.dateTime).toLocaleString()}
-                </p>
-                <p className="text-gray-700">
-                  <strong>{t('open')}:</strong> {candle.startPrice.toLocaleString()}
-                </p>
-                <p className="text-gray-700">
-                  <strong>{t('high')}:</strong> {candle.highestPrice.toLocaleString()}
-                </p>
-                <p className="text-gray-700">
-                  <strong>{t('low')}:</strong> {candle.lowestPrice.toLocaleString()}
-                </p>
-                <p className="text-gray-700">
-                  <strong>{t('close')}:</strong> {candle.endPrice.toLocaleString()}
-                </p>
-                <p className="text-gray-700">
-                  <strong>{t('volume')}:</strong> {candle.volume.toLocaleString()}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 flex justify-center items-center space-x-4">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="flex items-center px-4 py-2 bg-red-500 text-white hover:bg-red-700 rounded-lg disabled:cursor-not-allowed transition"
-            >
-              <AiOutlineArrowLeft />
-              <span>{t('previous')}</span>
-            </button>
-
-            <span className="text-gray-700">
-              {t('page')} {currentPage} {t('of')} {totalPages}
-            </span>
-
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="flex items-center px-4 py-2 bg-red-500 text-white hover:bg-red-700 rounded-lg disabled:cursor-not-allowed transition"
-            >
-              <span>{t('next')}</span>
-              <AiOutlineArrowRight />
-            </button>
-          </div>
-        </>
+      {filteredCandles.length > 0 ? (
+        <ResponsiveContainer width="100%" height={400} >
+          <ComposedChart data={filteredCandles}>
+            <XAxis dataKey="dateTime" tickFormatter={(time) => new Date(time).toLocaleDateString()} />
+            <YAxis />
+            <Tooltip labelFormatter={(time) => new Date(time).toLocaleString()} />
+            <CartesianGrid stroke="#f5f5f5" />
+            <Bar dataKey="volume" barSize={20} fill="#8884d8" />
+            <Line type="monotone" dataKey="startPrice" stroke="#ff7300" />
+            <Line type="monotone" dataKey="endPrice" stroke="#387908" />
+          </ComposedChart>
+        </ResponsiveContainer>
       ) : (
         <p className="text-center text-gray-500">{t('noCandleData')}</p>
       )}
