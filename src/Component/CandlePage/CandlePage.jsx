@@ -16,6 +16,7 @@ import {
   Bar,
   Line,
 } from 'recharts';
+import i18n from '../../i18n';
 
 const openDb = () => {
   return new Promise((resolve, reject) => {
@@ -95,6 +96,10 @@ const CandlePage = () => {
     fetchData();
   }, [fetchData]);
 
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
+
   if (loading) return <Loading />;
 
   if (error) {
@@ -110,6 +115,15 @@ const CandlePage = () => {
       <Helmet>
         <title>{t('candleDataFor')} {symbol}</title>
       </Helmet>
+
+      <div className="flex justify-end mb-4">
+        <button onClick={() => changeLanguage('en')} className="mx-2 px-4 py-2 border rounded">
+          English
+        </button>
+        <button onClick={() => changeLanguage('de')} className="mx-2 px-4 py-2 border rounded">
+          Deutsch
+        </button>
+      </div>
 
       <button
         onClick={() => {
@@ -127,7 +141,7 @@ const CandlePage = () => {
       </h2>
 
       {filteredCandles.length > 0 ? (
-        <ResponsiveContainer width="100%" height={400} >
+        <ResponsiveContainer width="100%" height={400}>
           <ComposedChart data={filteredCandles}>
             <XAxis dataKey="dateTime" tickFormatter={(time) => new Date(time).toLocaleDateString()} />
             <YAxis />
