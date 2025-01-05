@@ -57,18 +57,18 @@ const CandlePage = () => {
   const [candles, setCandles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const itemsPerPage = 6;
 
   const filteredCandles = useMemo(
     () => candles.filter((candle) => candle.symbol.toLowerCase() === symbol.toLowerCase()),
     [candles, symbol]
   );
 
-  const paginatedCandles = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredCandles.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredCandles, currentPage, itemsPerPage]);
+  // const paginatedCandles = useMemo(() => {
+  //   const startIndex = (currentPage - 1) * itemsPerPage;
+  //   return filteredCandles.slice(startIndex, startIndex + itemsPerPage);
+  // }, [filteredCandles, currentPage, itemsPerPage]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -116,7 +116,7 @@ const CandlePage = () => {
           navigate(-1);
           window.scrollTo(0, 0);
         }}
-        className="mb-6 flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200"
+        className="mb-6 flex items-center bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl"
       >
         <AiOutlineArrowLeft className="mr-2" />
         {t('back')}
@@ -127,17 +127,106 @@ const CandlePage = () => {
       </h2>
 
       {filteredCandles.length > 0 ? (
-        <ResponsiveContainer width="100%" height={400} >
-          <ComposedChart data={filteredCandles}>
-            <XAxis dataKey="dateTime" tickFormatter={(time) => new Date(time).toLocaleDateString()} />
-            <YAxis />
-            <Tooltip labelFormatter={(time) => new Date(time).toLocaleString()} />
-            <CartesianGrid stroke="#f5f5f5" />
-            <Bar dataKey="volume" barSize={20} fill="#8884d8" />
-            <Line type="monotone" dataKey="startPrice" stroke="#ff7300" />
-            <Line type="monotone" dataKey="endPrice" stroke="#387908" />
+        <ResponsiveContainer width="100%" height={400}>
+          <ComposedChart data={filteredCandles} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <defs>
+              <linearGradient id="volumeGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#818cf8" stopOpacity={0.2}/>
+              </linearGradient>
+              <linearGradient id="startPriceGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#f97316" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#fb923c" stopOpacity={0.2}/>
+              </linearGradient>
+              <linearGradient id="endPriceGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#16a34a" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#4ade80" stopOpacity={0.2}/>
+              </linearGradient>
+            </defs>
+            <XAxis 
+              dataKey="dateTime" 
+              tickFormatter={(time) => new Date(time).toLocaleDateString()}
+              tick={{ fill: '#4b5563', fontSize: 12 }}
+              axisLine={{ stroke: '#d1d5db', strokeWidth: 2 }}
+            />
+            <YAxis 
+              tick={{ fill: '#4b5563', fontSize: 12 }}
+              axisLine={{ stroke: '#d1d5db', strokeWidth: 2 }}
+            />
+            <Tooltip 
+              contentStyle={{
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(0, 0, 0, 0.1)',
+                borderRadius: '12px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.15)',
+                padding: '12px'
+              }}
+              labelFormatter={(time) => new Date(time).toLocaleString()}
+              formatter={(value) => value.toLocaleString()}
+            />
+            <CartesianGrid 
+              strokeDasharray="4 4" 
+              stroke="#e5e7eb" 
+              strokeOpacity={0.5}
+            />
+            <Bar 
+              dataKey="volume" 
+              barSize={20} 
+              fill="url(#volumeGradient)"
+              radius={[6, 6, 0, 0]}
+              animationDuration={800}
+              onMouseEnter={(e) => {
+                e.target.style.fill = '#4f46e5';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.fill = 'url(#volumeGradient)';
+              }}
+            />
+            <Line 
+              type="monotone" 
+              dataKey="startPrice" 
+              stroke="url(#startPriceGradient)"
+              strokeWidth={3}
+              dot={{ 
+                r: 5, 
+                fill: '#f97316', 
+                stroke: '#fff', 
+                strokeWidth: 2,
+                className: 'hover:scale-125 transition-all'
+              }}
+              activeDot={{ 
+                r: 8,
+                stroke: '#fff',
+                strokeWidth: 2,
+                fill: '#f97316',
+                className: 'shadow-lg'
+              }}
+              animationDuration={1000}
+            />
+            <Line 
+              type="monotone" 
+              dataKey="endPrice" 
+              stroke="url(#endPriceGradient)"
+              strokeWidth={3}
+              dot={{ 
+                r: 5, 
+                fill: '#16a34a', 
+                stroke: '#fff', 
+                strokeWidth: 2,
+                className: 'hover:scale-125 transition-all'
+              }}
+              activeDot={{ 
+                r: 8,
+                stroke: '#fff',
+                strokeWidth: 2,
+                fill: '#16a34a',
+                className: 'shadow-lg'
+              }}
+              animationDuration={1000}
+            />
           </ComposedChart>
-        </ResponsiveContainer>
+          </ResponsiveContainer>
       ) : (
         <p className="text-center text-gray-500">{t('noCandleData')}</p>
       )}
